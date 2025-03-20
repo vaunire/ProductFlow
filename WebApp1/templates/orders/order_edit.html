@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid">
+    <div class="content">
+        <!-- #NAV_LINKS - Навигационные ссылки -->
+        <div class="nav-links">
+            <a href="/">Главная</a> <span class="separator">/</span> <a href="{% url 'all_borrowed_books' %}">Все заказы</a> 
+            <span class="separator">/</span> <a href="#">Редактирование заказа</a> <span class="separator">/</span> <a href="#">Заказ #{{ order.id }}</a>
+        </div>
+
+        <!-- #BACK_LINK_ACTIONS - Ссылка назад -->
+        <a href="{% url 'all_borrowed_books' %}" class="back-link-actions">
+            <i class="fas fa-arrow-left"></i> Перейти назад
+        </a>
+
+        <h1>Редактировать заказ</h1>
+        
+        <!-- #FORM_CONTAINER - Контейнер формы редактирования -->
+        <div class="form-container">
+
+            <!-- Вставка уведомлений -->
+            {% include 'notifications.html' with success_message="Заказ успешно отредактирован!" %}
+
+            <form action="{% url 'order_edit' order.id %}" method="POST">
+                {% csrf_token %}
+                <!-- #FORM_FIELDS - Поля формы -->
+                <div class="form-fields">
+                {% for field in form %}
+                    <p>
+                        {{ field.label_tag }}
+                        {{ field }}
+                    </p>
+                {% endfor %}
+                </div>
+
+                <!-- Кнопка редактирования -->
+                <button type="submit" class="custom-button">
+                    <i class="fa-solid fa-pencil"></i> Редактировать заказ
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

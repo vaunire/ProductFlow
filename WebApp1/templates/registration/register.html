@@ -1,0 +1,90 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Подключение иконок Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <!-- Подключение пользовательских стилей -->
+    <link href="{% static 'css/style.css' %}" rel="stylesheet" />
+    <!-- Иконка сайта -->
+    <link rel="icon" type="image/x-icon" href="{% static 'logo/favicon.ico' %}">
+    <!-- Заголовок страницы -->
+    <title>ProductFlow | Регистрация</title>
+</head>
+<body>
+    <!-- #LOGIN_CONTAINER - Контейнер формы регистрации -->
+    <div class="login-container">
+        <!-- #LOGIN_BOX - Блок с формой регистрации -->
+        <div class="login-box">
+            <h1>Регистрация</h1>
+
+            <!-- Вставка уведомлений -->
+            {% include 'notifications.html' %}
+
+            <!-- #REGISTER_FORM - Форма регистрации -->
+            <form method="POST" action="{% url 'register' %}" class="login-form">
+                {% csrf_token %}
+                <!-- Поле: Имя -->
+                <div class="form-group">
+                    <div class="icon-label">
+                        <i class="fa fa-address-book" aria-hidden="true" style="font-size: 14px"></i>
+                        <label for="{{ form.first_name.id_for_label }}">{{ form.first_name.label }}</label>
+                    </div>
+                    {{ form.first_name }}
+                </div>
+                <!-- Поле: Фамилия -->
+                <div class="form-group">
+                    <div class="icon-label">
+                        <i class="fa fa-address-book" aria-hidden="true" style="font-size: 14px"></i>
+                        <label for="{{ form.last_name.id_for_label }}">{{ form.last_name.label }}</label>
+                    </div>
+                    {{ form.last_name }}
+                </div>
+                <!-- Поле: Email -->
+                <div class="form-group">
+                    <div class="icon-label">
+                        <i class="fas fa-envelope" style="font-size: 14px"></i>
+                        <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+                    </div>
+                    {{ form.email }}
+                </div>
+                <!-- Поле: Имя пользователя -->
+                <div class="form-group">
+                    <div class="icon-label">
+                        <i class="fas fa-user"></i>
+                        <label for="{{ form.username.id_for_label }}">{{ form.username.label }}<span class="required-star">*</span></label>
+                    </div>
+                    {{ form.username }}
+                </div>
+                <!-- Поле: Пароль -->
+                <div class="form-group">
+                    <div class="icon-label">
+                        <i class="fas fa-lock"></i>
+                        <label for="{{ form.password1.id_for_label }}">{{ form.password1.label }}<span class="required-star">*</span></label>
+                    </div>
+                    {{ form.password1 }}
+                </div>
+                <!-- Поле: Подтверждение пароля -->
+                <div class="form-group">
+                    <div class="icon-label">
+                        <i class="fas fa-lock"></i>
+                        <label for="{{ form.password2.id_for_label }}">{{ form.password2.label }}<span class="required-star">*</span></label>
+                    </div>
+                    {{ form.password2 }}
+                </div>
+                <button type="submit" class="login-button">Зарегистрироваться</button>
+                <!-- Скрытое поле для редиректа -->
+                <input type="hidden" name="next" value="{{ next|default:'/' }}">
+            </form>
+
+            <!-- #REGISTER_LINK - Ссылка на страницу входа -->
+            <div class="register-link">
+                <p>Уже есть аккаунт? <a href="{% url 'login' %}">Войдите</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

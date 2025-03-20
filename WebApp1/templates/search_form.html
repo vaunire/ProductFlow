@@ -1,0 +1,14 @@
+<!-- #SEARCH_CONTAINER - Контейнер формы поиска -->
+<div class="search-container">
+    <!-- #SEARCH_FORM - Форма поиска с GET-запросом -->
+    <form method="GET" action="" class="search-form" id="search-form">
+        <!-- #SEARCH_GROUP - Группа элементов поиска -->
+        <div class="search-group">
+            <i class="fas fa-search"></i>
+            <!-- Поле ввода поискового запроса -->
+            <input type="text" name="q" value="{{ request.GET.q }}" placeholder="Поиск" class="search-input">
+            <!-- Скрытое поле для передачи статуса из фильтра -->
+            <input type="hidden" name="status" value="{{ request.GET.status }}">
+        </div>
+    </form>
+</div>

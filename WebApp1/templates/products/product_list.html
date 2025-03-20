@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid">
+    <div class="content">
+        <!-- #NAV_LINKS - Навигационные ссылки -->
+        <div class="nav-links">
+            <a href="/">Главная</a> <span class="separator">/</span> <a href="{% url 'all_borrowed_books' %}">Список продуктов</a>
+        </div>
+        <h1>Список продуктов</h1>
+
+        <!-- Вставка формы поиска -->
+        {% include 'search_form.html' %}
+
+        <!-- #PRODUCT_TABLE - Таблица продуктов (для сотрудников) -->
+        {% if request.user.is_staff %}
+            {% if products %}
+                <table class="product-table">
+                    <thead>
+                        <tr>
+                            <th class="main-col-id" style="color: white;">ID</th>
+                            <th class="main-col" style="color: white;">Название</th>
+                            <th class="main-col-desc" style="color: white;">Описание</th>
+                            <th class="main-col" style="color: white;">Вес, г</th>
+                            <th class="action-col"></th>
+                            <th class="action-col"></th>
+                            <th class="action-col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products %}
+                            <tr>
+                                <td class="main-col-id">{{ product.id }}</td>
+                                <td class="main-col">{{ product.title }}</td>
+                                <td class="main-col-desc">{{ product.short_description }}</td>
+                                <td class="main-col">{{ product.weight }}</td>
+                                <td class="action-col">
+                                    <a href="{% url 'product_detail' product.id product.slug %}" class="action-link detail">Подробнее</a>
+                                </td>
+                                <td class="action-col">
+                                    <a href="{% url 'product_edit' product.id product.slug %}" class="action-icon edit">
+                                        <i class="fas fa-pencil-alt"></i>
+                                    </a>
+                                </td>
+                                <td class="action-col">
+                                    <a href="{% url 'product_delete' product.id product.slug %}" class="action-icon delete"
+                                       onclick="return confirm('Вы уверены, что хотите удалить этот продукт?');">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="no-data">Список продуктов пуст</p>
+            {% endif %}
+
+            <button onclick="window.location.href='{% url 'product_create' %}'" class="custom-button">
+                <i class="fas fa-plus"></i> Добавить продукт
+            </button>
+
+        {% endif %}
+
+        <!-- #PRODUCT_CARDS - Карточки продуктов для всех пользователей -->
+        {% if products %}
+            <div class="product-card-container">
+                {% for product in products %}
+                    <!-- #PRODUCT_CARD - Карточка продукта -->
+                    <div class="product-card">
+                        <!-- #CARD_IMAGE - Изображение продукта -->
+                        <div class="product-card-image">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" alt="{{ product.title }}">
+                            {% else %}
+                                <div class="product-image-placeholder">
+                                    <i class="fas fa-box-open"></i>
+                                </div>
+                            {% endif %}
+                            <!-- #HEART_ICON - Иконка избранного -->
+                            <div class="heart-icon" data-product-id="{{ product.id }}">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                        </div>
+
+                        <!-- #CARD_INFO - Информация о продукте -->
+                        <div class="product-card-info">
+                            <h3 class="product-card-title">{{ product.title }}</h3>
+                            <!-- #STAR_RATING - Рейтинг в виде звёзд -->
+                            <div class="star-rating-card">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= 4 %}
+                                        <i class="fas fa-star filled"></i>
+                                    {% else %}
+                                        <i class="far fa-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                                <span class="rating-reviews">(45 отзывов)</span>
+                            </div>
+                            <p class="product-card-description">{{ product.short_description }}</p>
+                            <!-- #CARD_PRICE - Цена продукта -->
+                            {% with price=product.pricelistitem_set.first %}
+                                {% if price %}
+                                    <p class="product-card-price">{{ price.cost_product }} руб.</p>
+                                {% else %}
+                                    <p class="product-card-price">Цена не указана</p>
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+
+                        <!-- #CARD_ACTIONS - Кнопки действий -->
+                        <div class="product-card-actions">
+                            <a href="{% url 'product_detail' product.id product.slug %}" class="action-link detail">Подробнее</a>
+                            <button onclick="window.location.href='{% url 'cart_add' product.id %}'" class="add-to-cart">
+                                <i class="fa-solid fa-cart-shopping"></i> В корзину
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- #NO_DATA - Сообщение об отсутствии продуктов -->
+            <p class="no-data">Список продуктов пуст</p>
+        {% endif %}
+    </div>
+    <br>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const heartIcons = document.querySelectorAll(".heart-icon");
+
+        heartIcons.forEach(heartIcon => {
+            const productId = heartIcon.getAttribute("data-product-id");
+            const storageKey = `favorited_${productId}`;
+            const icon = heartIcon.querySelector("i");
+
+            // Проверяем начальное состояние из localStorage
+            const isFavorited = localStorage.getItem(storageKey) === "true";
+            if (isFavorited) {
+                heartIcon.classList.add("favorited");
+            }
+
+            // Обработчик клика для переключения состояния
+            heartIcon.addEventListener("click", function() {
+                const isCurrentlyFavorited = heartIcon.classList.contains("favorited");
+
+                if (isCurrentlyFavorited) {
+                    heartIcon.classList.remove("favorited");
+                    localStorage.setItem(storageKey, "false");
+                } else {
+                    heartIcon.classList.add("favorited");
+                    localStorage.setItem(storageKey, "true");
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

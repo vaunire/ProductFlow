@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid">
+    <div class="content">
+        <!-- #NAV_LINKS - Навигационные ссылки -->
+        <div class="nav-links">
+            <a href="/">Главная</a> <span class="separator">/</span> <a href="{% url 'cart_detail' %}">Корзина</a>
+        </div>
+
+        <h1>Ваша корзина</h1>
+
+        <!-- #CART_CONTAINER - Контейнер корзины -->
+        {% if cart_items %}
+        <div class="cart-container">
+            <!-- #CART_TABLE - Таблица корзины -->
+            <table class="cart-table">
+                <!-- #TABLE_HEADER - Заголовок таблицы -->
+                <thead>
+                    <tr>
+                        <th>Изображение</th>
+                        <th>Товар</th>
+                        <th>Цена</th>
+                        <th>Количество</th>
+                        <th>Сумма</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart_items %}
+                    <tr>
+                        <!-- #CART_IMAGE - Изображение товара -->
+                        <td class="cart-image">
+                            {% if item.product.image %}
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.title }}">
+                            {% else %}
+                            <!-- #CARD_IMAGE_PLACEHOLDER - Заглушка для изображения -->
+                            <div class="product-image-placeholder">?</div>
+                            {% endif %}
+                        </td>
+                        <!-- #CART_PRODUCT - Название товара -->
+                        <td class="cart-product">
+                            <a href="{{ item.product.get_absolute_url }}" class="product-link">{{ item.product.title }}</a>
+                        </td>
+                        <!-- #CART_PRICE - Цена товара -->
+                        <td class="cart-price">{{ item.price }} руб.</td>
+                        <!-- #CART_QUANTITY - Количество товара -->
+                        <td class="cart-quantity">
+                            <form method="post" action="{% url 'cart_add' item.product.id %}" class="quantity-form">
+                                {% csrf_token %}
+                                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="99" onchange="this.form.submit()">
+                                <input type="hidden" name="quantity_update" value="true">
+                            </form>
+                        </td>
+                        <!-- #CART_TOTAL - Сумма по товару -->
+                        <td class="cart-total">{{ item.total_price }} руб.</td>
+                        <!-- #CART_ACTIONS - Действия с товаром -->
+                        <td class="cart-actions">
+                            <a href="{% url 'cart_remove' item.product.id %}" class="action-icon delete" title="Удалить">
+                                Удалить
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <!-- #CART_SUMMARY - Блок общей стоимости -->
+            <div class="cart-summary">
+                <!-- #CART_TOTAL_BLOCK - Блок с итоговой суммой -->
+                <div class="cart-total-block">
+                    <!-- #CART_TOTAL_LABEL - Метка общей стоимости -->
+                    <span class="cart-total-label">Общая стоимость:</span>
+                    <!-- #CART_TOTAL_VALUE - Значение общей стоимости -->
+                    <span class="cart-total-value">{{ cart_total }} руб.</span>
+                </div>
+                <!-- #CART_CHECKOUT_BTN - Кнопка оформления заказа -->
+                <button class="cart-checkout-btn" onclick="#">
+                    Приступить к оформлению
+                </button>
+            </div>
+        </div>
+        {% else %}
+        <!-- #NO_DATA - Сообщение о пустой корзине -->
+        <div class="no-data">
+            <p>Корзина пуста</p>
+        </div>
+        {% endif %}
+
+        <!-- #BACK_LINK - Ссылка назад -->
+        <a href="{% url 'product_list' %}" class="back-link" style="margin-top:5px">
+            <i class="fas fa-arrow-left"></i> Перейти к товарам
+        </a>
+    </div>
+</div>
+{% endblock %}

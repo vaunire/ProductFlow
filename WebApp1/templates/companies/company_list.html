@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid">
+    <div class="content">
+        <!-- #NAV_LINKS - Навигационные ссылки -->
+        <div class="nav-links">
+            <a href="/">Главная</a> <span class="separator">/</span> <a href="{% url 'company_list' %}">Список компаний</a>
+        </div>
+
+        <h1>Список компаний, с которыми мы сотрудничаем</h1>
+        
+        <!-- #COMPANY_LIST - Список компаний -->
+        {% if company_list %}
+        <ul class="company-list">
+            {% for company in company_list %}
+            <!-- #COMPANY_ITEM - Элемент списка компаний -->
+            <li class="company-item">
+                <!-- #COMPANY_NAME - Название компании -->
+                <div class="company-name">{{ company.name }}</div>
+                <!-- #COMPANY_ADDRESS - Адрес компании -->
+                <div class="company-address">
+                    <i class="fas fa-map-marker-alt"></i> {{ company.adress|default:"Адрес отсутствует" }}
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <!-- #NO_DATA - Сообщение об отсутствии компаний -->
+        <p>Список компаний пуст или не передан.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

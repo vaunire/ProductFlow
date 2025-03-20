@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block content %}
+<!-- #ALL_LOANED_BOOKS_PAGE - Основной контейнер страницы всех заказов -->
+<div class="container-fluid">
+    <!-- #CONTENT_CONTAINER - Контейнер контента -->
+    <div class="content">
+        <!-- #NAV_LINKS - Навигационные ссылки -->
+        <div class="nav-links">
+            <a href="/">Главная</a> <span class="separator">/</span> <a href="{% url 'all_borrowed_books' %}">Все заказы</a>
+        </div>
+
+        <!-- #ALL_ORDERS_TITLE - Заголовок всех заказов -->
+        <h1>Все заказы</h1>
+
+        <!-- #SEARCH_FILTER_CONTAINER - Контейнер поиска и фильтров -->
+        <div class="search-filter-container">
+            <!-- Вставка формы поиска -->
+            {% include 'search_form.html' %}
+
+            <!-- #FILTERS - Фильтры -->
+            <div class="filters">
+                <form method="GET" action="{% url 'all_borrowed_books' %}" id="filter-form" style="display: flex; align-items: center; gap: 5px;">
+                    <!-- #FILTER_TEXT - Текст фильтров -->
+                    <div class="filter-text"><i class="fa-solid fa-filter"></i> Фильтры:</div>
+                    <!-- #SELECT_CONTAINER - Контейнер выпадающего списка -->
+                    <div class="select-container">
+                        <select name="status" id="status" onchange="this.form.submit()">
+                            <option value="" {% if not request.GET.status %}selected{% endif %}>Все статусы</option>
+                            <option value="1" {% if request.GET.status == '1' %}selected{% endif %}>На складе</option>
+                            <option value="2" {% if request.GET.status == '2' %}selected{% endif %}>В заказе</option>
+                            <option value="3" {% if request.GET.status == '3' %}selected{% endif %}>Продано</option>
+                        </select>
+                        <input type="hidden" name="q" value="{{ request.GET.q }}">
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- #STAFF_TABLE - Таблица заказов -->
+        {% if productinstance_list %}
+            <table class="product-table">
+                <!-- #TABLE_HEADER - Заголовок таблицы -->
+                <thead>
+                    <tr>
+                        <th class="main-col-id" style="color: white;">ID</th>
+                        <th class="main-col" style="color: white;">Продукт</th>
+                        <th class="main-col" style="color: white;">Заказчик</th>
+                        <th class="main-col" style="color: white;">Дата заказа</th>
+                        <th class="main-col" style="color: white;">Статус</th>
+                        <th class="action-col"></th>
+                        <th class="action-col"></th>
+                        <th class="action-col"></th>
+                    </tr>
+                </thead>
+                <!-- #TABLE_BODY - Тело таблицы -->
+                <tbody>
+                    {% for productinstance in productinstance_list %}
+                    <tr>
+                        <!-- #MAIN_COL - Колонки таблицы -->
+                        <td class="main-col-id">{{ productinstance.id }}</td>  
+                        <td class="main-col">
+                            {% if productinstance.product %}
+                            <!-- #PRODUCT_LINK - Ссылка на продукт -->
+                            <a href="{% url 'product_detail' productinstance.product.id productinstance.product.slug %}" class="product-link">
+                                {{ productinstance.product|truncatechars:44 }}
+                            </a>
+                            {% else %}
+                                Продукт не указан
+                            {% endif %}
+                        </td>
+                        <td class="main-col">
+                            {{ productinstance.customer.get_full_name|default:"Не указан" }}
+                        </td>
+                        <td class="main-col">
+                            {{ productinstance.due_back|date:"d.m.Y"|default:"Не указана" }}
+                        </td>
+                        <td class="main-col">
+                            {{ productinstance.status|default:"Не указан" }}
+                        </td>
+                        <!-- #ACTION_COLUMN - Колонка действий -->
+                        <td class="action-col">
+                            <a href="{% url 'order_detail' productinstance.id %}" class="action-link detail">Подробнее</a>
+                        </td>
+                        <td class="action-col">
+                            <a href="{% url 'order_edit' productinstance.id %}" class="action-icon edit" style="margin: 0 4px 0 4px;">
+                                <i class="fas fa-pencil-alt"></i>
+                            </a>
+                        </td>
+                        <td class="action-col">
+                            <a href="{% url 'order_delete' productinstance.id %}" class="action-icon delete" style="margin: 0 6px 0 4px;" 
+                               onclick="return confirm('Вы уверены, что хотите удалить этот заказ?');">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <!-- #NO_DATA_TABLE - Сообщение об отсутствии заказов в таблице -->
+                    <tr>
+                        <td colspan="8" class="no-data">Список заказов пуст</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+        <!-- #NO_DATA - Сообщение об отсутствии заказов -->
+        <p class="no-data">Список заказов пуст</p>
+        {% endif %}
+        
+        <!-- #ADD_BUTTON - Кнопка добавления заказа -->
+        <button onclick="window.location.href='{% url 'order_create' %}'" class="custom-button">
+            <i class="fas fa-plus"></i> Добавить заказ
+        </button>
+    </div>
+</div>
+{% endblock %}

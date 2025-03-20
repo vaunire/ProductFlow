@@ -1,0 +1,135 @@
+<body>
+    <header>
+        <!-- #TOP_NAV - Основная навигационная панель -->
+        <nav class="top-nav">
+            <!-- #SECONDARY_NAV - Список ссылок верхнего уровня -->
+            <ul class="nav secondary-nav">
+                <!-- Главная страница -->
+                <li class="nav-item">
+                    <a href="/" class="nav-link secondary-link">Главная</a>
+                </li>
+                {% if user.is_authenticated %}
+                    <!-- Мои заказы -->
+                    <li class="nav-item">
+                        <a href="{% url 'my_borrowed_books' %}" class="nav-link secondary-link">Мои заказы</a>
+                    </li>
+                {% endif %}
+                {% if user.is_staff or user.is_superuser %}
+                    <li class="nav-item separator">|</li>
+                    {% if user.is_superuser %}
+                        <li class="nav-item dropdown">
+                            <a href="#" class="nav-link secondary-link dropdown-toggle">Работа со справочниками</a>
+                            <!-- #DROPDOWN_MENU - Список элементов выпадающего меню -->
+                            <div class="dropdown-menu">
+                                <span class="dropdown-header"></span>
+                                <a href="{% url 'product_list' %}" class="dropdown-item">Список продуктов</a>
+                                <a href="#" class="dropdown-item">Прайс-лист</a>
+                            </div>
+                        </li>
+                    {% endif %}
+                    {% if user.is_staff %}
+                        <!-- Все заказы -->
+                        <li class="nav-item">
+                            <a href="{% url 'all_borrowed_books' %}" class="nav-link secondary-link">Все заказы</a>
+                        </li>
+                    {% endif %}
+                    <li class="nav-item separator">|</li>
+                {% endif %}
+                <!-- Поле поиска -->
+                <li class="nav-item">
+                    <a href="#" class="nav-link secondary-link">
+                        <i class="fa fa-search" style="-webkit-text-stroke: 0.3px white; font-size:14px;"></i> Поиск
+                    </a>
+                </li>
+            </ul>
+
+            <!-- #AUTH_SECTION - Блок авторизации -->
+            <div class="auth-section">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'cart_detail' %}" class="nav-link auth-icon" title="Корзина" style="position: relative;">
+                        <i class="fa fa-shopping-basket" aria-hidden="true" style="font-size: 15px; color:gray; opacity:0.45"></i>
+                        {% if cart|length %}
+                            <!-- Количество товаров в корзине -->
+                            <span class="badge">{{ cart|length }}</span>
+                        {% endif %}
+                    </a>
+                    <div class="divider-cart"></div>
+                    <!-- #USER_INFO - Информация о пользователе -->
+                    <div class="user-info">
+                        <div class="user-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <!-- Имя пользователя -->
+                        <a href="{% url 'my_borrowed_books' %}" class="username">{{ user.get_username }}</a>
+                    </div>
+                    <!-- #LOGOUT_FORM - Форма выхода -->
+                    <form method="POST" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="logout-button">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </form>
+                {% else %}
+                    <!-- Кнопка входа -->
+                    <a href="{% url 'login' %}" class="login-button">
+                        <i class="fas fa-sign-in-alt"></i> Войти
+                    </a>
+                {% endif %}
+            </div>
+        </nav>
+
+        <!-- #SUB_MENU_CONTAINER - Контейнер подменю -->
+        <div class="sub-menu-container">
+            <!-- #MENU_TOGGLE - Кнопка раскрытия подменю -->
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+            <!-- #SUB_NAV - Подменю с основными ссылками -->
+            <div class="sub-nav" id="subNav">
+                <ul class="nav main-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'company_list' %}">Компании, с которыми мы сотрудничаем</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'product_list' %}">Продукция, которую мы реализуем</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </header>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const menuToggle = document.querySelector(".menu-toggle");
+            const subNav = document.querySelector("#subNav");
+            const dropdownToggle = document.querySelector(".dropdown-toggle");
+            const dropdownMenu = document.querySelector(".dropdown-menu");
+
+            // Инициализация состояния подменю из localStorage
+            const isSubNavOpen = localStorage.getItem("subNavOpen") === "true";
+            if (isSubNavOpen) {
+                subNav.classList.add("active");
+            }
+
+            // Обработчик клика на иконку меню
+            menuToggle.addEventListener("click", function() {
+                subNav.classList.toggle("active");
+                localStorage.setItem("subNavOpen", subNav.classList.contains("active"));
+            });
+
+            // Логика для dropdown "Работа со справочниками"
+            if (dropdownToggle && dropdownMenu) {
+                dropdownToggle.addEventListener("click", function(e) {
+                    e.preventDefault();
+                    dropdownMenu.classList.toggle("active");
+                });
+
+                document.addEventListener("click", function(e) {
+                    if (!dropdownToggle.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                        dropdownMenu.classList.remove("active");
+                    }
+                });
+            }
+        });
+    </script>
+</body>

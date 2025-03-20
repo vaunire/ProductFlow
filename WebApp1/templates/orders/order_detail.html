@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid">
+    <div class="content">
+        <!-- #NAV_LINKS - Навигационные ссылки -->
+        <div class="nav-links">
+            <a href="/">Главная</a> <span class="separator">/</span> 
+            <a href="{% url 'all_borrowed_books' %}">Все заказы</a> <span class="separator">/</span> 
+            <a href="#">Заказ #{{ order.id }}</a> 
+        </div>
+
+        <h1>Заказ: {{ order.product.title }} ({{ order.inv_num }})</h1> 
+
+        <!-- #ORDER_DETAILS - Информация о заказе -->
+        <div class="order-details">
+            <!--  Поле: Продукт -->
+            <div class="detail-item">
+                <span class="detail-label">Продукт:</span> 
+                <a href="{% url 'product_detail' order.product.id order.product.slug %}">{{ order.product.title }}</a>
+            </div>
+            <!-- Поле: Инвентарный номер -->
+            <div class="detail-item">
+                <span class="detail-label">Инвентарный номер:</span> {{ order.inv_num }}
+            </div>
+            <!-- Поле: Статус -->
+            <div class="detail-item">
+                <span class="detail-label">Статус:</span> {{ order.status|default:"Не указан" }}
+            </div>
+            <!-- Поле: Дата окончания -->
+            <div class="detail-item">
+                <span class="detail-label">Дата окончания:</span> {{ order.due_back|date:"d.m.Y"|default:"Не указана" }}
+            </div>
+            <!-- Поле: Заказчик -->
+            <div class="detail-item">
+                <span class="detail-label">Заказчик:</span> 
+                {% if order.customer %}
+                    {% with full_name=order.customer.get_full_name %}
+                        {% if full_name %}
+                            {{ order.customer.last_name }} {{ order.customer.first_name }} | {{ order.customer.username }}
+                        {% else %}
+                            {{ order.customer.username }}
+                        {% endif %}
+                    {% endwith %}
+                {% else %}
+                    Не указан
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- #BACK_LINK - Ссылка назад -->
+        <a href="{{ request.META.HTTP_REFERER|default:'{% url "all_borrowed_books" %}' }}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Перейти назад
+        </a>
+    </div>
+</div>
+{% endblock %}

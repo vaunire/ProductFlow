@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid">
+    <div class="content">
+        <!-- #NAV_LINKS - Навигационные ссылки -->
+        <div class="nav-links">
+            <a href="/">Главная</a> <span class="separator">/</span> <a href="{% url 'my_borrowed_books' %}">Мои заказы</a>
+        </div>
+
+        <h1>Ваши заказы, {{ user.get_full_name }}</h1>
+
+        <!-- #ORDER_LIST - Список заказов -->
+        {% if productinstance_list %}
+        <ul class="order-list">
+            {% for productinstance in productinstance_list %}
+            <!-- #ORDER_ITEM - Элемент списка заказов -->
+            <li class="order-item">
+                <!-- #ORDER_NUMBER - Номер заказа -->
+                <div class="order-number">
+                    <span>{{ forloop.counter }}</span>
+                </div>
+                <!-- #ORDER_INFO - Информация о заказе -->
+                <div class="order-info">
+                    <!-- #ORDER_HEADER - Заголовок заказа -->
+                    <div class="order-header">
+                        <!-- #ORDER_TITLE - Название заказа -->
+                        <span class="order-title">{{ productinstance.product }}</span>
+                    </div>
+                    <!-- #ORDER_DETAILS_ACC - Дополнительные детали заказа -->
+                    <div class="order-details-acc">
+                        <!-- #ORDER_DATE - Дата заказа -->
+                        <div class="order-date">
+                            <i class="fas fa-calendar-alt"></i> Дата заказа: {{ productinstance.due_back|default:"Не указана" }}
+                        </div>
+                        <!-- #ORDER_STATUS - Статус заказа -->
+                        <span class="order-status {% if productinstance.due_back %}active{% else %}completed{% endif %}">
+                            {% if productinstance.due_back %}В процессе{% else %}Завершен{% endif %}
+                        </span>
+                    </div>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <!-- #NO_DATA - Сообщение об отсутствии заказов -->
+        <div class="no-data">
+            <p>У вас пока нет заказов.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

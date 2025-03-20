@@ -1,0 +1,20 @@
+# Игнорировать базу данных SQLite
+*.sqlite3
+*.db
+
+# Игнорировать виртуальное окружение
+venv/
+env/
+*.venv/
+.venv/
+
+# Игнорировать кэш Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Игнорировать файлы настроек IDE
+.idea/
+.vscode/
+*.swp
+*.swo

@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+    {% block content %}
+    <div class="container-fluid">
+        <div class="content">
+            
+            {% if user.is_authenticated %}
+            <h1>
+                Добро пожаловать на наш сайт,
+                {% if user.get_full_name %}  
+                    {{ user.get_full_name }}!
+                {% else %}
+                    {{ user.username }}!
+                {% endif %}
+            </h1>
+            {% else %}
+            <h1>Добро пожаловать на наш сайт!</h1>
+            {% endif %}
+
+            <p>На этой странице Вы сможете узнать о нашей продукции</p>
+
+            <!-- #CARD_CONTAINER - Контейнер карточек -->
+            <div class="card-container">
+                <!-- #CARD - Карточка продуктов -->
+                <div class="card">
+                    <!-- #CARD_ICON - Иконка карточки -->
+                    <div class="card-icon">
+                        <i class="fa-solid fa-cart-flatbed"></i>
+                    </div>
+                    <!-- #CARD_NUMBER - Число в карточке -->
+                    <div class="card-number">{{ num_product }}</div>
+                    <!-- #CARD_LABEL - Подпись карточки -->
+                    <div class="card-label">Количество различных продуктов, доступных для заказа</div>
+                </div>
+                <!-- #CARD - Карточка компаний -->
+                <div class="card">
+                    <!-- #CARD_ICON - Иконка карточки -->
+                    <div class="card-icon">
+                        <i class="fa-solid fa-shop"></i>
+                    </div>
+                    <!-- #CARD_NUMBER - Число в карточке -->
+                    <div class="card-number">{{ num_company }}</div>
+                    <!-- #CARD_LABEL - Подпись карточки -->
+                    <div class="card-label">Количество компаний, с которыми мы сотрудничаем</div>
+                </div>
+                <!-- #CARD - Карточка доступных продуктов -->
+                <div class="card">
+                    <!-- #CARD_ICON - Иконка карточки -->
+                    <div class="card-icon">
+                        <i class="fas fa-box-open"></i>
+                    </div>
+                    <!-- #CARD_NUMBER - Число в карточке -->
+                    <div class="card-number">{{ num_instance_available }}</div>
+                    <!-- #CARD_LABEL - Подпись карточки -->
+                    <div class="card-label">Количество продуктов, доступных для заказа</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock %}

@@ -1,0 +1,17 @@
+<!-- #SUCCESS_MESSAGE - Уведомление об успешной операции -->
+{% if success %}
+    <div class="success-message">
+        <p>{{ success_message|default:"Операция успешно выполнена!" }}</p>
+    </div>
+{% endif %}
+
+<!-- #ERROR_MESSAGE - Уведомление об ошибках формы -->
+{% if form.errors %}
+    <div class="error-message">
+        {% for field, errors in form.errors.items %}
+            {% for error in errors %}
+                <p>{{ error }}</p>
+            {% endfor %}
+        {% endfor %}
+    </div>
+{% endif %}
